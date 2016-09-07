@@ -1,10 +1,12 @@
 import pandas
 
 #datafile = "C:\Diana\Poland\Poland\poland_aggregate.csv"
-datafile = "D:\Poland\poland.csv"
+datafile = "C:/Users/d.omelianchyk/Downloads/poland.csv"
+#datafile = "D:\Poland\poland.csv"
 history = pandas.read_csv(datafile, sep = ";", decimal = ",")
 
-datafile = "D:\Poland\poland_info.csv"
+#datafile = "D:\Poland\poland_info.csv"
+datafile = "C:/Users/d.omelianchyk/Downloads/poland_info.csv"
 firm_info = pandas.read_csv(datafile, sep = ";", decimal = ",")
 
 print(history)
@@ -30,7 +32,7 @@ workers_file = open("workers.txt", "w")
 
 for step in range(steps):
     poland.step(50)
-    sales_file.write(str(poland.sales[step]) + '\n')
+    sales_file.write("%.2f" % poland.sales[step]+ '\n')
     workers_file.write(str(poland.workers[step]) + '\n')
 
 sales_file.close()
