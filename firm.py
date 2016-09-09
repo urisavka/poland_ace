@@ -9,7 +9,8 @@ class Firm:
         self.history = history
 
     def step(self, subsidies):
-        self.sales = self.clf.predict([self.workers, subsidies]) + random.normalvariate(0, self.history['sales'].std())
+        print("Firm step")
+        self.sales = self.clf.predict([[self.workers, subsidies]]) + random.normalvariate(0, self.history['sales'].std())
         self.sales = self.sales if self.sales > 0 else 0
         self.history.update([[self.workers, subsidies, self.sales]])
         self.clf.fit(self.history[['workers', 'subsidies']], self.history['sales'])
