@@ -5,7 +5,7 @@ import pandas
 datafile = "poland.csv"
 history = pandas.read_csv(datafile, sep = ";", decimal = ",")
 
-datafile = "poland_info.csv"
+datafile = "poland_info_copy.csv"
 #datafile = "D:\Poland\poland_info_copy.csv"
 #datafile = "C:/Users/d.omelianchyk/Downloads/poland_info.csv"
 firm_info = pandas.read_csv(datafile, sep = ";", decimal = ",")
@@ -37,11 +37,11 @@ workers_file.close()
 rscore_file.close()
 
 for step in range(steps):
+    poland.step(history['budget'][step], history['employees'][step])
+    print("Step " + str(step + 1) + " finished." )
     sales_file = open("sales.txt", "a")
     workers_file = open("workers.txt", "a")
     rscore_file = open("rscore.txt", "a")
-    poland.step(history['subsidies'][step], history['employees'][step])
-    print("Step " + str(step + 1) + " finished." )
     rscore = r2_score(history['revenues'][:len(poland.sales)], poland.sales)
     print(rscore)
     sales_file.write("%.2f" % poland.sales[step]+ '\n')

@@ -24,6 +24,7 @@ class World:
         self.employees = employees
         self.sales = []
         self.workers = []
+        self.t = 0
 
     def step(self, subsidies, employees):
         self.match(employees)
@@ -31,11 +32,12 @@ class World:
         sold = 0
         workers = 0
         for firm in self.firms:
-            firm.step(subsidies)
+            firm.step(subsidies/len(self.firms))
             sold += firm.sales
             workers += firm.workers
         self.sales.append(sold)
         self.workers.append(workers)
+        self.t += 1
 
 
 
@@ -46,7 +48,7 @@ class World:
         self.employees += entrance_rate
         for i in range(abs(int(entrance_rate))):
             employer = numpy.random.choice(self.firms, replace=False)
-            print("Employer " + str(i) + " " + str(employer.workers))
+            print("Step " + str(self.t) + " Employer " + str(i) + " " + str(employer.workers))
             #TODO: make choice proportional to size of firm instead of uniform
             #employer = numpy.random.choice(self.firms, replace=False, p= workers / sum(workers))
             if entrance_rate > 0:
