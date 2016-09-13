@@ -18,9 +18,14 @@ from sklearn import linear_model
 
 clf = linear_model.BayesianRidge(compute_score= True)
 #clf = linear_model.LinearRegression()
-clf.fit(history[['workers', 'subsidies']], history['sales'])
+#clf.fit(history[['workers', 'subsidies']], history['sales'])
+clf.fit(history[['employees', 'budget']], history['revenues'])
 
-print(clf.score(history[['workers', 'subsidies']], history['sales']))
+for i in range(len(history['revenues'])):
+    print("%.2f" % clf.predict([history['employees'][i], history['budget'][i]]))
+
+#print(clf.score(history[['workers', 'subsidies']], history['sales']))
+print(clf.score(history[['employees', 'budget']], history['revenues']))
 
 from world import World
 from sklearn.metrics import r2_score
