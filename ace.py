@@ -1,5 +1,15 @@
+from scenario import Scenario
+from world import World
+
+import mape
+
+from sklearn import linear_model
+from sklearn.metrics import r2_score
+
 import pandas
 import random
+
+import matplotlib.pyplot as plt
 
 #datafile = "C:\Diana\Poland\Poland\poland_aggregate.csv"
 #datafile = "C:/Users/d.omelianchyk/Downloads/poland.csv"
@@ -16,16 +26,6 @@ print(firm_info)
 
 random.seed(1)
 
-import numpy
-
-def mape(y_pred, y_true):
-    res = 0
-    for i in range(len(y_true)):
-        res += abs((y_pred[i] - y_true[i])/y_true[i])
-    return res/len(y_true) * 100
-
-
-from sklearn import linear_model
 
 clf = linear_model.BayesianRidge(compute_score= True, fit_intercept = False)
 #clf = linear_model.LinearRegression()
@@ -35,9 +35,6 @@ clf.fit(history[['employees', 'budget']], history['revenues'])
 
 print(clf.score(history[['workers', 'subsidies']], history['sales']))
 print(clf.score(history[['employees', 'budget']], history['revenues']))
-
-from world import World
-from sklearn.metrics import r2_score
 
 poland = World(history['employees'][0], firm_info, history[['workers', 'subsidies', 'sales']])
 
@@ -74,10 +71,6 @@ for step in range(steps):
 
 
 
-
-
-
-import matplotlib.pyplot as plt
 
 plt.figure(figsize=(6, 5))
 plt.title("Sales")
