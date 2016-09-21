@@ -16,7 +16,7 @@ class World:
 
         self.history = history
         if regression_type == 'total':
-            self.history = self.history.rename(index=str, columns={"employees": "workers", "budget": "subsidies", "revenues": "sales"},
+            self.history.rename(index=str, columns={"employees": "workers", "budget": "subsidies", "revenues": "sales"},
                                                inplace = True)
         self.clf = linear_model.BayesianRidge(compute_score = True, fit_intercept=False)
         self.clf.fit(history[['workers', 'subsidies']], history['sales'])
@@ -48,7 +48,7 @@ class World:
         sold = 0
         workers = 0
         if self.distribute_subsidies:
-            distributed_subsidies = self.distribute_subsidies(subsidies)
+            distributed_subsidies = self.distribute_funding(subsidies)
         else:
             distributed_subsidies = [subsidies/len(self.firms)] * len(self.firms)
         for i, firm in enumerate(self.firms):
@@ -59,7 +59,7 @@ class World:
         self.workers.append(workers)
         self.t += 1
 
-    def distribute_subsidies(self, subsidies):
+    def distribute_funding(self, subsidies):
         distributed_subsidies = []
         subsidies_mean = self.history['subsidies'].mean()
         subsidies_sd = self.history['subsidies'].std()
