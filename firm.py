@@ -2,19 +2,24 @@ from sklearn import linear_model
 import random
 import pandas
 import time
+import math
 
 class Firm:
-    def __init__(self, i, workers, clf, history, disturb_result):
+    def __init__(self, i, workers, clf, history, disturb_result, regression):
         self.id = i
         self.workers = workers
         self.clf = clf
         self.history = history
         self.disturb_result = disturb_result
+        self.regression = regression
 #        random.seed(1)
 
     def step(self, subsidies):
         print("Firm step " + str(time.time()))
-        self.sales = self.clf.predict([[self.workers, subsidies]])
+        if self.regression == 'loglinear':
+            self.sales = math.exp(self.clf.predict([[self.workers, subsidies]]))
+        else:
+            self.sales = self.clf.predict([[self.workers, subsidies]])
         if self.disturb_result:
             self.sales += random.normalvariate(0, 0.05 * self.sales)
         #self.sales = self.clf.predict([[self.workers, subsidies]])

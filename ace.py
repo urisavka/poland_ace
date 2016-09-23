@@ -19,8 +19,9 @@ datafile = "poland.csv"
 steps = 34
 
 firm_configurations = ["firm_info_1.csv", "firm_info_1000_10_10.csv", "firm_info_5000_5000_5000.csv", "firm_info_10000_1000_100.csv",
-                       "firm_info_10000_1000_100_10.csv", "firm_info_200000.csv"]
+                       "firm_info_10_10_10.csv", "firm_info_100_100_100", "firm_info_10000_1000_100_10.csv", "firm_info_200000.csv"]
 
+regressions = ['bayes', 'linear', 'loglinear']
 regression_types = ["total", "average"]
 
 distribute_subsidies = [True, False]
@@ -29,19 +30,20 @@ disturb_coefficients = [True, False]
 
 with open("output.csv", "w", newline='') as output_file:
     writer = csv.DictWriter(output_file, delimiter=';',
-                            fieldnames=["seed", "firm_configuration", "regression_type", "distribute_subsidies",
+                            fieldnames=["seed", "firm_configuration", "regression", "regression_type", "distribute_subsidies",
                                         "disturb_result", "disturb_coefficients", "step", "mape", "r2_score"])
     writer.writeheader()
 output_file.close()
 
-for seed in range(10):
+for seed in range(1000):
     for firm_config in firm_configurations:
-        for regression_type in regression_types:
-            for distribute_subsidy in distribute_subsidies:
-                for disturb_result in disturb_results:
-                    for disturb_coefficient in disturb_coefficients:
-                        Scenario("poland.csv", firm_config, regression_type, distribute_subsidy, disturb_result, disturb_coefficient,
-                                 False, seed).run(steps)
+        for regression in regressions:
+            for regression_type in regression_types:
+                for distribute_subsidy in distribute_subsidies:
+                    for disturb_result in disturb_results:
+                        for disturb_coefficient in disturb_coefficients:
+                            Scenario("poland.csv", firm_config, regression_type, distribute_subsidy, disturb_result,
+                                     disturb_coefficient, regression, seed).run(steps)
 
 #scenario = Scenario("poland.csv", "firm_info_1000_10_10.csv", seed = 1)
 

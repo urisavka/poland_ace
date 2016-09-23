@@ -11,7 +11,7 @@ import csv
 
 class Scenario():
     def __init__(self, history, firm_info, regression_type = "total", distribute_subsidies = False, disturb_result = False,
-                 disturb_coefficients = False, log_regression = False, seed = 1, output_file = "output.csv"):
+                 disturb_coefficients = False, regression = "bayes", seed = 1, output_file = "output.csv"):
         random.seed(seed)
         self.seed = seed
         self.history = pandas.read_csv(history, sep = ";", decimal = ",")
@@ -20,14 +20,14 @@ class Scenario():
         self.regression_type = regression_type
         self.disturb_result = disturb_result
         self.disturb_coefficients = disturb_coefficients
-        self.log_regression = log_regression
+        self.regression = regression
         self.distribute_subsidies = distribute_subsidies
         if self.regression_type == 'average':
             self.model = World(self.history['employees'][0], self.firm_info, self.history[['workers', 'subsidies', 'sales']],
-                               distribute_subsidies, disturb_result, disturb_coefficients, log_regression, regression_type)
+                               distribute_subsidies, disturb_result, disturb_coefficients, regression, regression_type)
         else:
             self.model = World(self.history['employees'][0], self.firm_info, self.history[['employees', 'budget', 'revenues']],
-                               distribute_subsidies, disturb_result, disturb_coefficients, log_regression, regression_type)
+                               distribute_subsidies, disturb_result, disturb_coefficients, regression, regression_type)
 
         self.benchmark = self.history['revenues']
         self.workers_history = self.history['employees']
@@ -40,8 +40,8 @@ class Scenario():
         for step in range(steps):
             self.model.step(self.budget_history[step], self.workers_history[step])
             print("Step " + str(step + 1) + " finished.")
-            self.output_writer.writerow((self.seed, self.firm_configuration, self.regression_type, self.distribute_subsidies,
-                                         self.disturb_result, self.disturb_coefficients, step + 1,
+            self.output_writer.writerow((self.seed, self.firm_configuration, self.regression_type, self.regression,
+                                         self.distribute_subsidies, self.disturb_result, self.disturb_coefficients, step + 1,
                                          mape(self.benchmark[:len(self.model.sales)], self.model.sales),
                                          r2_score(self.benchmark[:len(self.model.sales)], self.model.sales)))
 #            sales_file.write("%.2f" % poland.sales[step] + '\n')

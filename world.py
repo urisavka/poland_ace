@@ -3,30 +3,39 @@ import random
 import pandas
 import numpy
 import copy
+import math
 
 from firm import Firm
 
 class World:
-    def __init__(self, employees, firm_info, history, distribute_subsidies, disturb_result, disturb_coefficients, log_regression,
+    def __init__(self, employees, firm_info, history, distribute_subsidies, disturb_result, disturb_coefficients, regression,
                  regression_type):
         self.distribute_subsidies = distribute_subsidies
         self.disturb_result = disturb_result
         self.disturb_coefficients = disturb_coefficients
-        self.log_regression = log_regression
+        self.regression = regression
 
         self.history = history
         if regression_type == 'total':
             self.history.rename(index=str, columns={"employees": "workers", "budget": "subsidies", "revenues": "sales"},
                                                inplace = True)
-        self.clf = linear_model.BayesianRidge(compute_score = True, fit_intercept=False)
-        self.clf.fit(history[['workers', 'subsidies']], history['sales'])
-        self.create_firms(firm_info, history, self.clf, employees, disturb_result, disturb_coefficients)
+        if regression == 'bayes':
+            self.clf = linear_model.BayesianRidge(compute_score = True, fit_intercept=False)
+            self.clf.fit(history[['workers', 'subsidies']], history['sales'])
+        elif regression == 'linear':
+            self.clf = linear_model.LinearRegression(fit_intercept=False)
+            self.clf.fit(history[['workers', 'subsidies']], history['sales'])
+        elif regression == 'loglinear':
+            self.clf = linear_model.LinearRegression(fit_intercept=False)
+            self.history.apply(math.log)
+            self.clf.fit(history[['workers', 'subsidies']], history['sales'])
+        self.create_firms(firm_info, history, self.clf, employees, disturb_result, disturb_coefficients, regression)
         self.employees = employees
         self.sales = []
         self.workers = []
         self.t = 0
 
-    def create_firms(self, firm_info, history, clf, employees, disturb_result, disturb_coefficients):
+    def create_firms(self, firm_info, history, clf, employees, disturb_result, disturb_coefficients, regression):
         self.firms = []
         i = 0
         for index, info in firm_info.iterrows():
@@ -36,7 +45,8 @@ class World:
                     firm_clf.coef_[0]+= random.normalvariate(0, 0.1 * clf.coef_[0])
                     firm_clf.coef_[1] += random.normalvariate(0, 0.1 * clf.coef_[1])
                 self.firms.append(
-                    Firm(i, random.normalvariate(float(info['workers']), float(info['sd'])), firm_clf, history, disturb_result))
+                    Firm(i, random.normalvariate(float(info['workers']), float(info['sd'])), firm_clf, history, disturb_result,
+                         regression))
                 i += 1
         workers = sum([firm.workers for firm in self.firms])
         for firm in self.firms:
