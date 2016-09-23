@@ -5,12 +5,13 @@ import csv
 import pandas
 import random
 
+from sklearn import linear_model
+
 import matplotlib.pyplot as plt
 
 #datafile = "C:\Diana\Poland\Poland\poland_aggregate.csv"
 #datafile = "C:/Users/d.omelianchyk/Downloads/poland.csv"
 datafile = "poland.csv"
-#history = pandas.read_csv(datafile, sep = ";", decimal = ",")
 
 #datafile = "poland_info_copy.csv"
 #datafile = "D:\Poland\poland_info_copy.csv"

@@ -27,7 +27,7 @@ class World:
             self.clf.fit(history[['workers', 'subsidies']], history['sales'])
         elif regression == 'loglinear':
             self.clf = linear_model.LinearRegression(fit_intercept=False)
-            self.history.apply(math.log)
+            self.history = self.history.apply(func=lambda x: pandas.Series(map(math.log, x)))
             self.clf.fit(history[['workers', 'subsidies']], history['sales'])
         self.create_firms(firm_info, history, self.clf, employees, disturb_result, disturb_coefficients, regression)
         self.employees = employees
@@ -78,6 +78,7 @@ class World:
             new_subsidy = new_subsidy if new_subsidy > 0 else 0
             distributed_subsidies.append(new_subsidy)
         total = sum(distributed_subsidies)
+        total = total if total != 0 else 1
         for i in range(len(distributed_subsidies)):
             distributed_subsidies[i] = distributed_subsidies[i] * subsidies / total
         return distributed_subsidies
