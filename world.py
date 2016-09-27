@@ -1,4 +1,5 @@
 from sklearn import linear_model
+from sklearn.preprocessing import PolynomialFeatures
 import random
 import pandas
 import numpy
@@ -21,15 +22,15 @@ class World:
                                                inplace = True)
         if regression == 'bayes':
             self.clf = linear_model.BayesianRidge(compute_score = True, fit_intercept=False)
-            self.clf.fit(history[['workers', 'subsidies']], history['sales'])
+            self.clf.fit(self.history[['workers', 'subsidies']], self.history['sales'])
         elif regression == 'linear':
             self.clf = linear_model.LinearRegression(fit_intercept=False)
-            self.clf.fit(history[['workers', 'subsidies']], history['sales'])
+            self.clf.fit(self.history[['workers', 'subsidies']], self.history['sales'])
         elif regression == 'loglinear':
-            self.clf = linear_model.LinearRegression(fit_intercept=False)
-            self.history = self.history.apply(func=lambda x: pandas.Series(map(math.log, x)))
-            self.clf.fit(history[['workers', 'subsidies']], history['sales'])
-        self.create_firms(firm_info, history, self.clf, employees, disturb_result, disturb_coefficients, regression)
+            self.history['product'] = self.history.workers.mul(self.history.subsidies)
+            self.clf = linear_model.LinearRegression(fit_intercept=False, normalize=False)
+            self.clf.fit(self.history[['product']], self.history[['sales']])
+        self.create_firms(firm_info, self.history, self.clf, employees, disturb_result, disturb_coefficients, regression)
         self.employees = employees
         self.sales = []
         self.workers = []
@@ -43,7 +44,8 @@ class World:
                 firm_clf = copy.deepcopy(clf)
                 if disturb_coefficients:
                     firm_clf.coef_[0]+= random.normalvariate(0, 0.1 * clf.coef_[0])
-                    firm_clf.coef_[1] += random.normalvariate(0, 0.1 * clf.coef_[1])
+                    if len(firm_clf.coef_) > 1:
+                        firm_clf.coef_[1] += random.normalvariate(0, 0.1 * clf.coef_[1])
                 self.firms.append(
                     Firm(i, random.normalvariate(float(info['workers']), float(info['sd'])), firm_clf, history, disturb_result,
                          regression))
