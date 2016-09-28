@@ -28,8 +28,10 @@ class World:
             self.clf.fit(self.history[['workers', 'subsidies']], self.history['sales'])
         elif regression == 'loglinear':
             self.history['product'] = self.history.workers.mul(self.history.subsidies)
-            self.clf = linear_model.LinearRegression(fit_intercept=False, normalize=False)
-            self.clf.fit(self.history[['product']], self.history[['sales']])
+            self.history['log_product'] = self.history['product'].apply(math.log)
+            self.history['log_sales'] = self.history['sales'].apply(math.log)
+            self.clf = linear_model.LinearRegression(fit_intercept=True)
+            self.clf.fit(self.history[['log_product']], self.history[['log_sales']])
         self.create_firms(firm_info, self.history, self.clf, employees, disturb_result, disturb_coefficients, regression)
         self.employees = employees
         self.sales = []

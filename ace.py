@@ -23,7 +23,7 @@ firm_configurations = ["firm_info_1.csv", "firm_info_1000_10_10.csv", "firm_info
                        "firm_info_10_10_10.csv", "firm_info_100_100_100.csv", "firm_info_10000_1000_100_10.csv", "firm_info_200000.csv"]
 
 regressions = ['loglinear','bayes', 'linear']
-regression_types = ["total", "average"]
+regression_types = ["average", "total"]
 
 distribute_subsidies = [True, False]
 disturb_results = [True, False]
