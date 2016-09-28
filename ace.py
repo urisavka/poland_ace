@@ -19,8 +19,12 @@ datafile = "poland.csv"
 
 steps = 34
 
-firm_configurations = ["firm_info_1.csv", "firm_info_1000_10_10.csv", "firm_info_5000_5000_5000.csv", "firm_info_10000_1000_100.csv",
+#firm_configurations = ["firm_info_1.csv", "firm_info_1000_10_10.csv", "firm_info_5000_5000_5000.csv", "firm_info_10000_1000_100.csv",
+#                       "firm_info_10_10_10.csv", "firm_info_100_100_100.csv", "firm_info_10000_1000_100_10.csv", "firm_info_200000.csv"]
+
+firm_configurations = ["firm_info_1000_10_10.csv", "firm_info_5000_5000_5000.csv", "firm_info_10000_1000_100.csv",
                        "firm_info_10_10_10.csv", "firm_info_100_100_100.csv", "firm_info_10000_1000_100_10.csv", "firm_info_200000.csv"]
+
 
 regressions = ['loglinear','bayes', 'linear']
 regression_types = ["average", "total"]

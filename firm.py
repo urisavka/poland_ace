@@ -17,6 +17,7 @@ class Firm:
     def step(self, subsidies):
         print("Firm step " + str(time.time()))
         if self.regression == 'loglinear':
+            subsidies = subsidies if subsidies != 0 else 1
             self.sales = math.exp(self.clf.predict([[math.log(self.workers * subsidies)]]))
         else:
             self.sales = self.clf.predict([[self.workers, subsidies]])

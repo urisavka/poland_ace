@@ -48,8 +48,12 @@ class World:
                     firm_clf.coef_[0]+= random.normalvariate(0, 0.1 * clf.coef_[0])
                     if len(firm_clf.coef_) > 1:
                         firm_clf.coef_[1] += random.normalvariate(0, 0.1 * clf.coef_[1])
+                while True:
+                    workers = int(random.normalvariate(float(info['workers']), float(info['sd'])))
+                    if workers > 0:
+                        break
                 self.firms.append(
-                    Firm(i, random.normalvariate(float(info['workers']), float(info['sd'])), firm_clf, history, disturb_result,
+                    Firm(i, workers, firm_clf, history, disturb_result,
                          regression))
                 i += 1
         workers = sum([firm.workers for firm in self.firms])
