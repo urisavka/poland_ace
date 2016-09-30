@@ -9,7 +9,7 @@ import math
 from firm import Firm
 
 class World:
-    def __init__(self, employees, firm_info, history, distribute_subsidies, disturb_result, disturb_coefficients, regression,
+    def other__init__(self, employees, firm_info, history, distribute_subsidies, disturb_result, disturb_coefficients, regression,
                  regression_type):
         self.distribute_subsidies = distribute_subsidies
         self.disturb_result = disturb_result
@@ -38,6 +38,50 @@ class World:
         self.workers = []
         self.t = 0
 
+    def __init__(self, employees, firm_info, history, distribute_subsidies, disturb_result, disturb_coefficients,
+                     regression, regression_type, match_info):
+
+        self.distribute_subsidies = distribute_subsidies
+        self.disturb_result = disturb_result
+        self.disturb_coefficients = disturb_coefficients
+        self.regression = regression
+
+        self.history = history
+        if regression_type == 'total':
+            self.history.rename(index=str, columns={"employees": "workers", "budget": "subsidies", "revenues": "sales"},
+                                inplace=True)
+        if regression == 'bayes':
+            self.clf = linear_model.BayesianRidge(compute_score=True, fit_intercept=False)
+            self.clf.fit(self.history[['workers', 'subsidies']], self.history['sales'])
+        elif regression == 'linear':
+            self.clf = linear_model.LinearRegression(fit_intercept=False)
+            self.clf.fit(self.history[['workers', 'subsidies']], self.history['sales'])
+        elif regression == 'loglinear':
+            self.history['product'] = self.history.workers.mul(self.history.subsidies)
+            self.history['log_product'] = self.history['product'].apply(math.log)
+            self.history['log_sales'] = self.history['sales'].apply(math.log)
+            self.clf = linear_model.LinearRegression(fit_intercept=True)
+            self.clf.fit(self.history[['log_product']], self.history[['log_sales']])
+        self.firms = firm_info
+        self.set_parameters()
+        self.employees = employees
+        self.sales = []
+        self.workers = []
+        self.t = 0
+        self.match_info = match_info
+
+    def set_parameters(self):
+        for firm in self.firms:
+            firm_clf = copy.deepcopy(self.clf)
+            if self.disturb_coefficients:
+                firm_clf.coef_[0] += random.normalvariate(0, 0.1 * self.clf.coef_[0])
+                if len(firm_clf.coef_) > 1:
+                    firm_clf.coef_[1] += random.normalvariate(0, 0.1 * self.clf.coef_[1])
+            firm.clf = firm_clf
+            firm.disturb_result = self.disturb_result
+            firm.regression = self.regression
+
+
     def create_firms(self, firm_info, history, clf, employees, disturb_result, disturb_coefficients, regression):
         self.firms = []
         i = 0
@@ -61,7 +105,11 @@ class World:
             firm.workers = int(firm.workers / workers * employees)
 
     def step(self, subsidies, employees):
-        self.match(employees)
+        if not hasattr(self, 'match_info'):
+            self.match(employees)
+        else:
+            self.firms = self.match_info[self.t]
+        self.set_parameters()
         print("Match employees finished")
         sold = 0
         workers = 0
@@ -90,9 +138,6 @@ class World:
         for i in range(len(distributed_subsidies)):
             distributed_subsidies[i] = distributed_subsidies[i] * subsidies / total
         return distributed_subsidies
-
-
-
 
     def match(self, employees):
         entrance_rate = employees - self.employees

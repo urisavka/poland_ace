@@ -10,13 +10,14 @@ from mape import mape
 import csv
 
 class Scenario():
-    def __init__(self, history, firm_info, regression_type = "total", distribute_subsidies = False, disturb_result = False,
-                 disturb_coefficients = False, regression = "bayes", seed = 1, output_file = "output.csv"):
+    def __init__(self, history, firm_info, match_info, firm_config, regression_type = "total", distribute_subsidies = False, disturb_result = False,
+                 disturb_coefficients = False, regression = "bayes", seed = 1, output_file = "output.csv",):
         random.seed(seed)
         self.seed = seed
         self.history = pandas.read_csv(history, sep = ";", decimal = ",")
-        self.firm_info = pandas.read_csv(firm_info, sep = ";", decimal = ",")
-        self.firm_configuration = '_'.join(str.split(firm_info.strip(".csv"), "_")[2:])
+        #self.firm_info = pandas.read_csv(firm_info, sep = ";", decimal = ",")
+        self.firm_info = firm_info
+        self.firm_configuration = '_'.join(str.split(firm_config.strip(".csv"), "_")[2:])
         self.regression_type = regression_type
         self.disturb_result = disturb_result
         self.disturb_coefficients = disturb_coefficients
@@ -24,10 +25,10 @@ class Scenario():
         self.distribute_subsidies = distribute_subsidies
         if self.regression_type == 'average':
             self.model = World(self.history['employees'][0], self.firm_info, self.history[['workers', 'subsidies', 'sales']],
-                               distribute_subsidies, disturb_result, disturb_coefficients, regression, regression_type)
+                               distribute_subsidies, disturb_result, disturb_coefficients, regression, regression_type, match_info)
         else:
             self.model = World(self.history['employees'][0], self.firm_info, self.history[['employees', 'budget', 'revenues']],
-                               distribute_subsidies, disturb_result, disturb_coefficients, regression, regression_type)
+                               distribute_subsidies, disturb_result, disturb_coefficients, regression, regression_type, match_info)
 
         self.benchmark = self.history['revenues']
         self.workers_history = self.history['employees']

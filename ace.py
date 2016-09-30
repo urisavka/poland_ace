@@ -1,6 +1,10 @@
 from scenario import Scenario
 
 import csv
+import copy
+
+from create_firms import create_firms
+from match import match
 
 import pandas
 import random
@@ -12,6 +16,7 @@ import matplotlib.pyplot as plt
 #datafile = "C:\Diana\Poland\Poland\poland_aggregate.csv"
 #datafile = "C:/Users/d.omelianchyk/Downloads/poland.csv"
 datafile = "poland.csv"
+history = pandas.read_csv(datafile, sep = ";", decimal = ",")
 
 #datafile = "poland_info_copy.csv"
 #datafile = "D:\Poland\poland_info_copy.csv"
@@ -19,12 +24,8 @@ datafile = "poland.csv"
 
 steps = 34
 
-#firm_configurations = ["firm_info_1.csv", "firm_info_1000_10_10.csv", "firm_info_5000_5000_5000.csv", "firm_info_10000_1000_100.csv",
-#                       "firm_info_10_10_10.csv", "firm_info_100_100_100.csv", "firm_info_10000_1000_100_10.csv", "firm_info_200000.csv"]
-
-firm_configurations = ["firm_info_1000_10_10.csv", "firm_info_5000_5000_5000.csv", "firm_info_10000_1000_100.csv",
+firm_configurations = ["firm_info_1.csv", "firm_info_1000_10_10.csv", "firm_info_5000_5000_5000.csv", "firm_info_10000_1000_100.csv",
                        "firm_info_10_10_10.csv", "firm_info_100_100_100.csv", "firm_info_10000_1000_100_10.csv", "firm_info_200000.csv"]
-
 
 regressions = ['loglinear','bayes', 'linear']
 regression_types = ["average", "total"]
@@ -42,12 +43,19 @@ output_file.close()
 
 for seed in range(1000):
     for firm_config in firm_configurations:
+        firm_info = create_firms(pandas.read_csv(firm_config, sep = ";", decimal = ","), history['employees'][0])
+        firms = copy.deepcopy(firm_info)
+        match_info = []
+        for step in range(steps):
+            if step != 0:
+                firms = match(firms, history['employees'][step] - history['employees'][step - 1])
+            match_info.append(firms)
         for regression in regressions:
             for regression_type in regression_types:
                 for distribute_subsidy in distribute_subsidies:
                     for disturb_result in disturb_results:
                         for disturb_coefficient in disturb_coefficients:
-                            Scenario("poland.csv", firm_config, regression_type, distribute_subsidy, disturb_result,
+                            Scenario("poland.csv", firm_info, match_info, firm_config, regression_type, distribute_subsidy, disturb_result,
                                      disturb_coefficient, regression, seed).run(steps)
 
 #scenario = Scenario("poland.csv", "firm_info_1000_10_10.csv", seed = 1)
