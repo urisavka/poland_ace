@@ -39,7 +39,7 @@ class World:
         self.t = 0
 
     def __init__(self, employees, firm_info, history, distribute_subsidies, disturb_result, disturb_coefficients,
-                     regression, regression_type, match_info):
+                     regression, regression_type, match_info, distribute_subsidies_info):
 
         self.distribute_subsidies = distribute_subsidies
         self.disturb_result = disturb_result
@@ -69,6 +69,7 @@ class World:
         self.workers = []
         self.t = 0
         self.match_info = match_info
+        self.distribute_subsidies_info = distribute_subsidies_info
 
     def set_parameters(self):
         for firm in self.firms:
@@ -114,7 +115,8 @@ class World:
         sold = 0
         workers = 0
         if self.distribute_subsidies:
-            distributed_subsidies = self.distribute_funding(subsidies)
+            #distributed_subsidies = self.distribute_funding(subsidies)
+            distributed_subsidies = self.distribute_subsidies_info[self.t]
         else:
             distributed_subsidies = [subsidies/len(self.firms)] * len(self.firms)
         for i, firm in enumerate(self.firms):
