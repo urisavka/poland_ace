@@ -116,7 +116,7 @@ class World:
         workers = 0
         if self.distribute_subsidies:
             #distributed_subsidies = self.distribute_funding(subsidies)
-            distributed_subsidies = self.distribute_subsidies_info-[self.t]
+            distributed_subsidies = self.distribute_subsidies_info[self.t]
         else:
             distributed_subsidies = [subsidies/len(self.firms)] * len(self.firms)
         for i, firm in enumerate(self.firms):
