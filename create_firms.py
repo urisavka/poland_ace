@@ -1,5 +1,6 @@
 import random
 import copy
+import math
 
 from firm import Firm
 
@@ -17,5 +18,13 @@ def create_firms(firm_info, employees):
             i += 1
     workers = sum([firm.workers for firm in firms])
     for firm in firms:
-        firm.workers = int(firm.workers / workers * employees)
+        firm.workers = int(round(firm.workers / workers * employees, 0))
+    workers = sum([firm.workers for firm in firms])
+    while workers != employees:
+        employer = firms[random.randint(0, len(firms) - 1)]
+        if workers > employees and employer.workers - 1 > 0:
+            employer.workers -= 1
+        else:
+            employer.workers += 1
+        workers = sum([firm.workers for firm in firms])
     return firms

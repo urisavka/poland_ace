@@ -25,8 +25,13 @@ history = pandas.read_csv(datafile, sep = ";", decimal = ",")
 
 steps = 34
 
-firm_configurations = ["firm_info_1.csv", "firm_info_1000_10_10.csv", "firm_info_5000_5000_5000.csv", "firm_info_10000_1000_100.csv",
-                       "firm_info_10_10_10.csv", "firm_info_100_100_100.csv", "firm_info_10000_1000_100_10.csv", "firm_info_200000.csv"]
+#firm_configurations = ["firm_info_1000_10_10.csv", "firm_info_5000_5000_5000.csv", "firm_info_10000_1000_100.csv",
+#                       "firm_info_10_10_10.csv", "firm_info_100_100_100.csv", "firm_info_10000_1000_100_10.csv",
+#                       "firm_info_200000.csv"]
+
+firm_configurations = ["firm_info_5000_5000_5000.csv"]
+
+# "firm_info_1.csv",
 
 regressions = ['bayes', 'linear']
 regression_types = ["average", "total"]
@@ -52,6 +57,7 @@ for firm_config in firm_configurations:
             if step != 0:
                 firms = match(firms, history['employees'][step] - history['employees'][step - 1])
             match_info.append(firms)
+            firms = [firm for firm in firms if firm.workers > 0]
         for distribute_subsidy in distribute_subsidies:
             if distribute_subsidy:
                 random.seed(seed)

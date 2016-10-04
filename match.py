@@ -16,5 +16,4 @@ def match(firms, entrance_rate):
                 employer.workers -= 1
             else:
                 i -= 1
-                firms.remove(employer)
-        return firms
+    return firms

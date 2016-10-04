@@ -82,6 +82,15 @@ class World:
             firm.disturb_result = self.disturb_result
             firm.regression = self.regression
 
+    def update_firms(self):
+        for i, firm in enumerate(self.firms):
+            workers = self.match_info[self.t][i].workers
+            if workers > 0:
+                firm.workers = workers
+            else:
+                self.firms.remove(firm)
+
+
 
     def create_firms(self, firm_info, history, clf, employees, disturb_result, disturb_coefficients, regression):
         self.firms = []
@@ -109,8 +118,7 @@ class World:
         if not hasattr(self, 'match_info'):
             self.match(employees)
         else:
-            self.firms = self.match_info[self.t]
-        self.set_parameters()
+            self.update_firms()
         print("Match employees finished")
         sold = 0
         workers = 0
