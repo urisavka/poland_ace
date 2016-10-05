@@ -51,19 +51,18 @@ for firm_config in firm_configurations:
     for seed in range(1000):
         random.seed(seed)
         firm_info = create_firms(pandas.read_csv(firm_config, sep = ";", decimal = ","), history['employees'][0])
-        firms = copy.deepcopy(firm_info)
-        match_info = []
+        match_info = [[] for i in range(steps)]
+        match_info[0] = copy.deepcopy(firm_info)
         for step in range(steps):
             if step != 0:
-                firms = match(firms, history['employees'][step] - history['employees'][step - 1])
-            match_info.append(firms)
-            firms = [firm for firm in firms if firm.workers > 0]
+                match_info[step] = match(match_info[step - 1], history['employees'][step] - history['employees'][step - 1])
+                match_info[step] = [firm for firm in match_info[step] if firm.workers > 0]
         for distribute_subsidy in distribute_subsidies:
             if distribute_subsidy:
                 random.seed(seed)
                 distribute_subsidies_info = []
                 for step in range(steps):
-                    distribute_subsidies_info.append(distribute_funding(history, history['budget'][step], len(firm_info)))
+                    distribute_subsidies_info.append(distribute_funding(history, history['budget'][step], len(match_info[step])))
             for regression in regressions:
                 for regression_type in regression_types:
                     for disturb_result in disturb_results:
